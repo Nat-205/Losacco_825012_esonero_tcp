@@ -157,25 +157,11 @@ clearwinsock();
 /*host connesso */
 void clean();
 printf("\t\a \033[34m%s  %s \033[0m\n",inet_ntoa(cl_addr.sin_addr),"connesso!");
-const char *waiting= "benvenuto nel \"weather server\" inserisca la sua richiesta";
-
-if(send(conn_socks,waiting,strlen(waiting),0) != strlen(waiting) ) /*invio messaggio di richiesta al client */
-{
-err_msg("errore nella richiesta!");
-load_msg("chiusura della connessione",4);
-closesocket(conn_socks);
-#if  defined(_WIN32) || defined(_WIN64)
-clearwinsock();
-#endif
-}
 
 
 /* attente la richiesta meteo  dal client connesso */
 
-
-
 weather_request_t information;
-
 
 if(recv(conn_socks, &information, sizeof(weather_request_t),0) <=0)
 {
