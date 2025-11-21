@@ -106,7 +106,7 @@ return 1;
 #endif
 
 /* inizio main  client */
-int main() {
+int main(int argc, char *argv[]) {
 clean();
 #if  defined(_WIN32) || defined(_WIN64)
 if(!winstartup())
@@ -117,6 +117,16 @@ return -1;
 
 int connysocks;
 int cc=0;
+
+weather_request_t request;
+int promt;
+while((promt=getopt(argc,argv,"r:"))!=-1)
+{
+if(promt=='r')
+{
+sscanf(optarg,"%1s %[^\n]",request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
+}
+}
 do
 {
 connysocks=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -163,7 +173,8 @@ puts("\aConnesso!");
 
 char memobuff[BUFFER_SIZE]="\0";  /* setta l'array pulendolo*/
 
-/*Riceve il messaggio di richiesta di inserimento dei dati */
+
+/*Riceve il messaggio di richiesta di inserimento dei dati  //*/
 int communication;
 cc=0;
 do
@@ -188,42 +199,13 @@ while(cc);
 printf("\033[36m%s\n",memobuff); /*stampa il messaggio inviato dal server nel buffer */
 color_reset();
 memset(memobuff,0, BUFFER_SIZE); /*Ripulisce il buffer */
-
-weather_request_t msg;
-char req;
-
-puts("\t ==|| cosa vorresti sapere? ||==");
 printf("\n");
-puts("-voglio conoscere la temperatura (inserisci 't')");
-puts("-voglio conoscere l'umidita' presente nell'aria (inserisci 'h')");
-puts("-voglio conoscere la velocita' del vento (inserisci 'w')");
-puts("-voglio conoscere la pressione dell'aria (inserisci 'p')");
-scanf(" %c",&req);
-msg.type=req;
-printf("\n");
-char location[BUFFER_SIZE];
-clean();
-puts("\t ==||di quale localita' vorresti avere informazioni?||==");
-printf("\n");
-printf("-\033[31m%s\n\033[0m","BARI");
-printf("-\033[33m%s\n\033[0m","ROMA");
-printf("-\033[36m%s\n\033[0m","TORINO");
-printf("-\033[37m%s\n\033[0m","MILANO");
-printf("-\033[34m%s\n\033[0m","NAPOLI");
-printf("-\033[35m%s\n\033[0m","PALERMO");
-printf("-\033[36m%s\n\033[0m","GENOVA");
-printf("-\033[35m%s\n\033[0m","BOLOGNA");
-printf("-\033[31m%s\n\033[0m","FIRENZE");
-printf("-\033[32m%s\n\033[0m","VENEZIA");
-printf("\n");
-scanf("%s",location);
-strcpy(msg.city,location);
 cc=0;
 do
 {
 clean();
 load_msg("invio della richiesta al server",2500);
-if(send(connysocks,&msg,sizeof(msg),0) !=sizeof(msg))
+if(send(connysocks,&request,sizeof(request),0) !=sizeof(request))
 {
 err_msg("problema nella ricezione della richiesta!",&cc);
 if(!cc)
