@@ -88,7 +88,7 @@ return 1;
 #endif
 
 /* inizio main */
-int main() {
+int main(int argc, char *argv[]) {
 srand(time(NULL));
 #if  defined(_WIN32) || defined(_WIN64)
 if(!winstartup())
@@ -118,14 +118,14 @@ s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
 s_adr.sin_port=htons(PORT);
 s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host ip */
 printf("\n");
-void clean();
+ clean();
 load_msg("binding operation",3);
 if(bind(wsocks,(struct sockaddr *) &s_adr,sizeof(s_adr))<0)
 {
 err_msg(" errore di binding!");
 return -1;
 }
-void clean();
+clean();
 load_msg("binding completato",2);
 printf("\n");
 
@@ -134,7 +134,7 @@ if(listen(wsocks,QUEUE_SIZE)<0)
 err_msg("connessione fallita");
 return -1;
 }
-void clean();
+clean();
 load_msg("attendendo una richiesta di connessione",2);
 /*creazione della socket di connessione */
 int conn_socks;
@@ -157,7 +157,7 @@ clearwinsock();
 /*host connesso */
 void clean();
 printf("\t\a \033[34m%s  %s \033[0m\n",inet_ntoa(cl_addr.sin_addr),"connesso!");
-const char *waiting= "benvenuto nel \"weather server\" inserisca la sua richiesta meteo";
+const char *waiting= "benvenuto nel \"weather server\" inserisca la sua richiesta";
 
 if(send(conn_socks,waiting,strlen(waiting),0) != strlen(waiting) ) /*invio messaggio di richiesta al client */
 {
@@ -170,18 +170,14 @@ clearwinsock();
 }
 
 
-/* attente il messaggio da parte del client connesso */
-
-/*memorizzazione dei dati inviati dal client */
-typedef struct{
-    char type;
-    char city[64];
-}data;
-
-data information;
+/* attente la richiesta meteo  dal client connesso */
 
 
-if(recv(conn_socks, &information, sizeof(data),0) <=0)
+
+weather_request_t information;
+
+
+if(recv(conn_socks, &information, sizeof(weather_request_t),0) <=0)
 {
 err_msg("non e' stato ricevuto nessun messaggio!");
 load_msg("chiusura della connessione con l'host",4);
@@ -283,7 +279,7 @@ wrsp.status=state;
 wrsp.type=t;
 
 
-if(ok !=1)
+if(ok !=1 && state !=2)
 {
 state=1;
 }

@@ -37,7 +37,11 @@ typedef struct {
 } weather_response_t;
 
 
-
+/*memorizzazione dei dati inviati dal client */
+typedef struct{
+    char type;
+    char city[64];
+}weather_request_t;
 
 
 
