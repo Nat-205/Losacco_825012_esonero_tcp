@@ -172,32 +172,6 @@ clean();
 puts("\aConnesso!");
 
 char memobuff[BUFFER_SIZE]="\0";  /* setta l'array pulendolo*/
-
-
-/*Riceve il messaggio di richiesta di inserimento dei dati  //*/
-int communication;
-cc=0;
-do
-{
-clean();
-communication=recv(connysocks,memobuff, BUFFER_SIZE-1,0);
-if(communication <=0)
-{
-err_msg("richiesta non ricevuta!",&cc);
-clean();
-if(!cc)
-{
-closesocket(connysocks);
-#if  defined(_WIN32) || defined(_WIN64)
-clearwinsock();
-#endif
-return -1;
-}
-}
-}
-while(cc);
-printf("\033[36m%s\n",memobuff); /*stampa il messaggio inviato dal server nel buffer */
-color_reset();
 memset(memobuff,0, BUFFER_SIZE); /*Ripulisce il buffer */
 printf("\n");
 cc=0;
