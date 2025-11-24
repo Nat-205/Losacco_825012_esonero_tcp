@@ -200,6 +200,7 @@ cc=0;
 do
 {
 clean();
+int communication;
 communication=recv(connysocks,memobuff,BUFFER_SIZE-1,0);
 if(communication <=0)
 {
