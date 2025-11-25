@@ -124,7 +124,7 @@ while((promt=getopt(argc,argv,"r:"))!=-1)
 {
 if(promt=='r')
 {
-sscanf(optarg,"%1s %[^\n]",request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
+sscanf(optarg,"%c %[^\n]",request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
 }
 }
 do
@@ -178,7 +178,6 @@ cc=0;
 do
 {
 clean();
-load_msg("invio della richiesta al server",2500);
 if(send(connysocks,&request,sizeof(request),0) !=sizeof(request))
 {
 err_msg("problema nella ricezione della richiesta!",&cc);
@@ -195,6 +194,7 @@ return -1;
 }
 }
 while(cc);
+
 load_msg("attesa della risposta  del server",3400);
 cc=0;
 do
