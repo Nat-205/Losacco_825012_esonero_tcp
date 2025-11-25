@@ -13,11 +13,15 @@ typedef struct {
    char city[64];    // City name (null-terminated string)
 } weather_request_t;
 
+/*struttura che salva la risposta del server */
+typedef struct {
+    unsigned int status;  // Response status code
+    char type;            // Echo of request type
+    float value;          // Weather data value
+} weather_response_t;
+
+
 /*prototipi di funzione */
-void sleeping(int value); /* funzione di attesa portabile */
-void load_msg(const char *msg, int wait); /*stampa un messaggio di caricamento "animato" */
-void color_reset();  /*resetta la stampa del colore */
-void err_msg(const char * msg,int *choice); /* stampa un messaggio di errore ed eventuale scelta dell'utente*/
 void clean(); /*pulizia dello schermo */
 
 /* prototipi di funzioni windows */
