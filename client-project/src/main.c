@@ -122,25 +122,25 @@ switch(response.type) //t,h,w,p
 {
 case 't':
 {
-printf("%s: temperatura=%.1f °C",request.city,response.value);
+printf("%s: Temperatura = %.1f °C",request.city,response.value);
 break;
 }
 
 case 'h':
 {
-printf("%s: umidita'=%.1f %%",request.city,response.value);
+printf("%s: Umidità = %.1f %%",request.city,response.value);
 break;
 }
 
 case 'w':
 {
-printf("%s: velocità  del vento=%.1f km/h",request.city,response.value);
+printf("%s: Velocità  del vento = %.1f km/h",request.city,response.value);
 break;
 }
 
 case 'p':
 {
-printf("%s: pressione=%.1f hPa",request.city,response.value);
+printf("%s: Pressione=%.1f hPa",request.city,response.value);
 break;
 }
 
@@ -151,13 +151,13 @@ break;
 
 case 1:  //città non disponibile
 {
-printf("città non disponibile\n");
+printf("Città non disponibile\n");
 break;
 }
 
 case 2:
 {
-printf("richiesta non valida\n");
+printf("Richiesta non valida\n");
 break;
 }
 }
