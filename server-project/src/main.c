@@ -174,103 +174,45 @@ clearwinsock();
 #endif
 }
 
-char t=information.type;
-int state;
-if(t=='t' || t=='h' || t=='w' ||t=='p')
+if(information.type=='t' || information.type=='h' || information.type=='w' ||information.type=='p')
 {
 wrsp.status=0; //codice=successo
-state=0;
-}
-char city[64];
-strcpy(city,information.city);
-int ok=0;  /*impostato come "non trovato" */
-
-
-/*confronta tutti i possibili casi (evitando anche i problemi di case-sensitive( viene resituito 0 se la condizione è soddisfatta */
-
-if(strcasecmp(city,"Bari") ==0)
-{
-ok=1;
-}
-else
-{
-if(strcasecmp(city,"Roma")==0)
-{
-ok=1;
-}
-else
-{
-if(strcasecmp(city,"Milano")==0)
-{
-ok=1;
-}
-else
-{
-if(strcasecmp(city,"Napoli")==0)
-{
-ok=1;
-}
-else
-{
-if(strcasecmp(city,"Torino")==0)
-{
-ok=1;
-}
-else
-{
-if(strcasecmp(city,"Palermo")==0)
-{
-ok=1;
-}
-else
-{
-if(strcasecmp(city,"Genova")==0)
-{
-ok=1;
-}
-else
-{
-if(strcasecmp(city,"Bologna")==0)
-{
-ok=1;
-}
-else
-{
-if(strcasecmp(city,"Firenze")==0)
-{
-ok=1;
-}
-else
-{
-if(strcasecmp(city,"Venezia")==0)
-{
-ok=1;
-}
-}
-}
-}
-}
-}
-}
-}
-}
-}
-
-if(ok ==0)
-{
-wrsp.status=1;
-state=1;
 }
 else
 {
 wrsp.status=2;
-state=2;
 }
 
-float info;
-if(state==0)
+/*confronta tutti i possibili casi (evitando anche i problemi di case-sensitive( viene resituito 0 se la condizione è soddisfatta */
+if(wrsp.status !=2)
 {
-switch (t)
+char city[64];
+int flag=0;
+strcpy(city,information.city);
+
+const char *cities[]={
+"BARI","VENEZIA","FIRENZE","BOLOGNA","GENOVA","PALERMO","TORINO","NAPOLI","MILANO","ROMA",
+"Bari","Venezia","Firenze","Bologna","Genova","Palermo","Torino","Napoli","Milano","Roma",
+"bari","venezia","firenze","bologna","genova","palermo","torino","napoli","milano","roma"};
+
+int n = sizeof(cities) / sizeof(cities[0]);
+
+for(int i=0; i<n;i++)
+{
+if(strcmp(city,cities[i])==0)
+flag++;
+}
+if(flag==0)
+{
+wrsp.status=1;
+}
+}
+
+
+float info;
+if(wrsp.status==0)
+{
+switch (information.type)
 {
 
 /* calcolo della temperatura (se richiesta)  */
@@ -310,6 +252,12 @@ load_msg(" acquisizione della pressione dell'aria generandone la risposta",2);
 info= get_pressure();
 wrsp.value=info;
 wrsp.type='p';
+break;
+}
+default:
+{
+puts("richiesta non valida!");
+wrsp.status=2;
 break;
 }
 } //fine switch
