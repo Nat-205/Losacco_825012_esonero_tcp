@@ -144,7 +144,7 @@ break;
 
 case 'h':
 {
-printf("%s: umidita'=%.1f \%",request.city,response.value);
+printf("%s: umidita'=%.1f %%",request.city,response.value);
 break;
 }
 
