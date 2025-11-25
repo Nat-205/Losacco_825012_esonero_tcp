@@ -162,6 +162,7 @@ printf("\t\a \033[34m%s  %s \033[0m\n",inet_ntoa(cl_addr.sin_addr),"connesso!");
 /* attente la richiesta meteo  dal client connesso */
 
 weather_request_t information;
+weather_response_t wrsp;
 
 if(recv(conn_socks, &information, sizeof(weather_request_t),0) <=0)
 {
@@ -177,12 +178,15 @@ char t=information.type;
 int state;
 if(t=='t' || t=='h' || t=='w' ||t=='p')
 {
-state=0; //codice=successo
+wrsp.status=0; //codice=successo
+state=0;
 }
 else
 {
+wrsp.status=2;
 state=2;
 }
+
 
 char city[64];
 strcpy(city,information.city);
@@ -259,18 +263,13 @@ ok=1;
 }
 }
 
-float info;
-weather_response_t wrsp;
-wrsp.status=state;
-wrsp.type=t;
-
-
 if(ok !=1 && state !=2)
 {
+wrsp.status=1;
 state=1;
 }
 
-
+float info;
 if(state==0)
 {
 switch (t)
@@ -279,137 +278,59 @@ switch (t)
 /* calcolo della temperatura (se richiesta)  */
 case 't':
 {
+load_msg(" acquisizione della temperatura generandone la risposta",2);
 info=get_temperature();
 wrsp.value=info;
-load_msg(" acquisizione della temperatura generandone la risposta",2);
-char rsp[BUFFER_SIZE];
-memset(rsp,'\0',sizeof(rsp));
-sprintf(rsp,"Ricevuto risultato dal server ip %s  %s: temperatura= %.1f°C",inet_ntoa(cl_addr.sin_addr),city,wrsp.value);
-if(send(conn_socks, rsp, strlen(rsp),0) != strlen(rsp))
-{
-puts("\t\a problema di  overflow !");
-printf("\n");
-err_msg("la stringa e' troppo grande!");
-load_msg("chiusura della connessione",4000);
-closesocket(conn_socks);
-#if  defined(_WIN32) || defined(_WIN64)
-clearwinsock();
-#endif
-}
+wrsp.type='t';
 break;
 }
+
 /* calcolo dell'umidità (se richiesta) */
 case 'h':
 {
+load_msg(" acquisizione dell'umidita' generandone la risposta",2);
 info=get_humidity();
 wrsp.value=info;
-load_msg(" acquisizione dell'umidita' generandone la risposta",2);
-char rsp[BUFFER_SIZE];
-memset(rsp,'\0',sizeof(rsp));
-sprintf(rsp,"Ricevuto risultato dal server ip %s  %s: percentuale di umidita'= %.0f",inet_ntoa(cl_addr.sin_addr),city,wrsp.value);
-if(send(conn_socks, rsp, strlen(rsp),0) != strlen(rsp))
-{
-puts("\t\a problema di  overflow !");
-printf("\n");
-err_msg("la stringa e' troppo grande!");
-load_msg("chiusura della connessione",4000);
-closesocket(conn_socks);
-#if  defined(_WIN32) || defined(_WIN64)
-clearwinsock();
-#endif
-}
+wrsp.type='h';
 break;
 }
 
 /* calcolo della velocità del vento (se richiesta)  */
 case 'w':
 {
+load_msg(" acquisizione della velocita' del vento generandone la risposta",2);
 info=get_wind();
 wrsp.value=info;
-load_msg(" acquisizione della velocita' del vento generandone la risposta",2);
-char rsp[BUFFER_SIZE];
-memset(rsp,'\0',sizeof(rsp));
-sprintf(rsp,"Ricevuto risultato dal server ip %s  %s: velocita' del vento= %.1f km/h",inet_ntoa(cl_addr.sin_addr),city,wrsp.value);
-if(send(conn_socks, rsp, strlen(rsp),0) != strlen(rsp))
-{
-puts("\t\a problema di  overflow !");
-printf("\n");
-err_msg("la stringa e' troppo grande!");
-load_msg("chiusura della connessione",4000);
-closesocket(conn_socks);
-#if  defined(_WIN32) || defined(_WIN64)
-clearwinsock();
-#endif
-}
+wrsp.type='w';
 break;
 }
+
 /* calcolo della pressione (se richiesta)  */
 case 'p':
 {
- info= get_pressure();
- wrsp.value=info;
- load_msg(" acquisizione della pressione dell'aria generandone la risposta",2);
- char rsp[BUFFER_SIZE];
- memset(rsp,'\0',sizeof(rsp));
- sprintf(rsp,"Ricevuto risultato dal server ip %s  %s: pressione dell'aria= %.1f hPa",inet_ntoa(cl_addr.sin_addr),city,wrsp.value);
- if(send(conn_socks, rsp, strlen(rsp),0) != strlen(rsp))
- {
- puts("\t\a problema di  overflow !");
- printf("\n");
- err_msg("la stringa e' troppo grande!");
- load_msg("chiusura della connessione",4000);
- closesocket(conn_socks);
- #if  defined(_WIN32) || defined(_WIN64)
- clearwinsock();
- #endif
- }
+load_msg(" acquisizione della pressione dell'aria generandone la risposta",2);
+info= get_pressure();
+wrsp.value=info;
+wrsp.type='p';
 break;
 }
 } //fine switch
-}  //fine if
-else
+}
+
+
+
+if(send(conn_socks,&wrsp,sizeof(weather_response_t),0) != sizeof(weather_response_t))
 {
-	switch (state)
-	{
-	case 1:  /* caso "città non disponibile" */
-	{
-	char rsp[BUFFER_SIZE];
-	memset(rsp,'\0',sizeof(rsp));
-	sprintf(rsp,"Ricevuto risultato dal server ip %s Citta' non disponibile ",inet_ntoa(cl_addr.sin_addr));
-	if(send(conn_socks, rsp, strlen(rsp), 0) != strlen(rsp))
-	{
-	puts("\t\a problema di  overflow!!");
+	puts("\t\a problema di  overflow !");
 	printf("\n");
-	err_msg("la stringa ha un numero di bytes diverso da quanto asspettato!");
-	load_msg("chiusura della connessione",4);
+	err_msg("la stringa e' troppo grande!");
+	load_msg("chiusura della connessione",4000);
 	closesocket(conn_socks);
 	#if  defined(_WIN32) || defined(_WIN64)
 	clearwinsock();
 	#endif
 	}
-	break;
-	}
 
-	case 2:     /* caso "informazione errata" */
-	{
-	char rsp[BUFFER_SIZE];
-	memset(rsp,'\0',sizeof(rsp));
-	sprintf(rsp,"Ricevuto risultato dal server ip %s Richiesta non valida ",inet_ntoa(cl_addr.sin_addr));
-	if(send(conn_socks, rsp, strlen(rsp), 0) != strlen(rsp))
-	{
-	puts("\t\a problema di  overflow!!");
-	printf("\n");
-	err_msg("la stringa ha un numero di bytes diverso da quanto aspettato!");
-	load_msg("chiusura della connessione",4);
-	closesocket(conn_socks);
-		#if  defined(_WIN32) || defined(_WIN64)
-		clearwinsock();
-	#endif
-	}
-	break;
-	}
-	}  /*fine switch */
-	} /*fine else */
 clean();
 printf("\a\t terminando la connessione con  %s.\n",inet_ntoa(cl_addr.sin_addr));
 printf("\n");

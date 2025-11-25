@@ -45,8 +45,6 @@ typedef struct{
 
 
 
-
-
 /*funzioni di calcolo del valore richiesto dal client  */
 float get_temperature();    // Range: -10.0 to 40.0 °C
 float get_humidity();       // Range: 20.0 to 100.0 %
