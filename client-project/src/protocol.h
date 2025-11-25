@@ -21,8 +21,6 @@ typedef struct {
 } weather_response_t;
 
 
-/*prototipi di funzione */
-void clean(); /*pulizia dello schermo */
 
 /* prototipi di funzioni windows */
 #if defined (_WIN32) || (_WIN64)

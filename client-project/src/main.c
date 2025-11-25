@@ -8,15 +8,7 @@
 #include "protocol.h"
 
 
-/*pulizia "portabile" dello schermo */
-void clean()
-{
-#if  defined(_WIN32) || defined(_WIN64)
-system("cls");
-#else
-system("clear");
-#endif
-}
+
 
 
 
@@ -61,7 +53,6 @@ return 1;
 
 /* inizio main  client */
 int main(int argc, char *argv[]) {
-clean();
 #if  defined(_WIN32) || defined(_WIN64)
 if(!winstartup())
 {
@@ -96,18 +87,15 @@ printf("\n");
 int connection=connect(connysocks,(struct sockaddr *)&s_adr,sizeof(s_adr));
 if(connection <0)
 {
-clean();
 closesocket(connysocks);
 #if  defined(_WIN32) || defined(_WIN64)
 clearwinsock();
 #endif
 return -1;
 }
-clean();
 printf("\n");
 if(send(connysocks,&request,sizeof(request),0) !=sizeof(request))
 {
-clean();
 closesocket(connysocks);
 #if  defined(_WIN32) || defined(_WIN64)
 clearwinsock();
@@ -124,7 +112,8 @@ if(recv(connysocks,&response,sizeof(weather_response_t),0) <=0)
 	#endif
 	return -1;
 }
-printf("ricevuto risultato dal server ip %s." ,inet_ntoa(s_adr.sin_addr) );
+
+printf("ricevuto risultato dal server ip %s.  " ,inet_ntoa(s_adr.sin_addr) );
 switch(response.status)
 {
 case 0 :
@@ -145,7 +134,7 @@ break;
 
 case 'w':
 {
-printf("%s: velocita'  del vento=%.1f km/h",request.city,response.value);
+printf("%s: velocità  del vento=%.1f km/h",request.city,response.value);
 break;
 }
 
@@ -162,7 +151,7 @@ break;
 
 case 1:  //città non disponibile
 {
-printf("citta' non disponibile\n");
+printf("città non disponibile\n");
 break;
 }
 
@@ -175,7 +164,6 @@ break;
 printf("\n");
 
 closesocket(connysocks);
-clean();
 
 #if  defined(_WIN32) || defined(_WIN64)
 clearwinsock();
