@@ -113,6 +113,7 @@ err_msg("errore di creazione della socket!");
 return -1;
 }
 
+
 struct sockaddr_in s_adr;
 s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
 s_adr.sin_port=htons(PORT);
