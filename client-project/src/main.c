@@ -61,14 +61,24 @@ return -1;
 #endif
 
 int connysocks;
-
+int port=PORT;
 weather_request_t request;
 int promt;
-while((promt=getopt(argc,argv,"r:"))!=-1)
+while((promt=getopt(argc,argv,"r:p:"))!=-1)
 {
-if(promt=='r')
+switch(promt)
+{
+case 'r':
 {
 sscanf(optarg,"%c %[^\n]",&request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
+break;
+}
+case 'p': //se si vuole dichiarare una porta
+{
+port=atoi(optarg);
+break;
+}
+
 }
 }
 connysocks=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -81,7 +91,7 @@ return -1;
 
 struct sockaddr_in s_adr;
 s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
-s_adr.sin_port=htons(PORT);
+s_adr.sin_port=htons(port);
 s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host */
 printf("\n");
 int connection=connect(connysocks,(struct sockaddr *)&s_adr,sizeof(s_adr));
