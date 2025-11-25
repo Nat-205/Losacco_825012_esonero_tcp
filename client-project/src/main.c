@@ -93,11 +93,9 @@ s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
 s_adr.sin_port=htons(PORT);
 s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host */
 printf("\n");
-puts("tentando di stabilire una connessione");
 int connection=connect(connysocks,(struct sockaddr *)&s_adr,sizeof(s_adr));
 if(connection <0)
 {
-puts("connessione non riuscita!");
 clean();
 closesocket(connysocks);
 #if  defined(_WIN32) || defined(_WIN64)
@@ -106,11 +104,9 @@ clearwinsock();
 return -1;
 }
 clean();
-puts("\aConnesso!");
 printf("\n");
 if(send(connysocks,&request,sizeof(request),0) !=sizeof(request))
 {
-puts("problema nella ricezione della richiesta!");
 clean();
 closesocket(connysocks);
 #if  defined(_WIN32) || defined(_WIN64)
@@ -122,7 +118,6 @@ weather_response_t response;
 
 if(recv(connysocks,&response,sizeof(weather_response_t),0) <=0)
 {
-	puts(" il server non ha risposto!");
 	closesocket(connysocks);
 	#if  defined(_WIN32) || defined(_WIN64)
 	clearwinsock();
@@ -179,13 +174,11 @@ break;
 }
 printf("\n");
 
-puts("chiusura del collegamento");
 closesocket(connysocks);
 clean();
 
 #if  defined(_WIN32) || defined(_WIN64)
 clearwinsock();
 #endif
-puts("connessione con il server chiusa,arrivederci");
 return 0;
 } // main end
