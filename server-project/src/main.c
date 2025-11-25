@@ -181,13 +181,6 @@ if(t=='t' || t=='h' || t=='w' ||t=='p')
 wrsp.status=0; //codice=successo
 state=0;
 }
-else
-{
-wrsp.status=2;
-state=2;
-}
-
-
 char city[64];
 strcpy(city,information.city);
 int ok=0;  /*impostato come "non trovato" */
@@ -263,10 +256,15 @@ ok=1;
 }
 }
 
-if(ok !=1 && state !=2)
+if(ok ==0)
 {
 wrsp.status=1;
 state=1;
+}
+else
+{
+wrsp.status=2;
+state=2;
 }
 
 float info;
