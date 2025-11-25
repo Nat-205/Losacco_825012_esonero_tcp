@@ -174,7 +174,8 @@ clearwinsock();
 #endif
 }
 
-if(information.type=='t' || information.type=='h' || information.type=='w' ||information.type=='p')
+if(information.type=='t' || information.type=='h' || information.type=='w' ||information.type=='p'||
+information.type=='T' || information.type=='H' || information.type=='W' ||information.type=='P')  //case insensitive //
 {
 wrsp.status=0; //codice=successo
 }
@@ -225,8 +226,27 @@ wrsp.type='t';
 break;
 }
 
+case 'T':
+{
+load_msg(" acquisizione della temperatura generandone la risposta",2);
+info=get_temperature();
+wrsp.value=info;
+wrsp.type='t';
+break;
+}
+
+
 /* calcolo dell'umidità (se richiesta) */
 case 'h':
+{
+load_msg(" acquisizione dell'umidita' generandone la risposta",2);
+info=get_humidity();
+wrsp.value=info;
+wrsp.type='h';
+break;
+}
+
+case 'H':
 {
 load_msg(" acquisizione dell'umidita' generandone la risposta",2);
 info=get_humidity();
@@ -245,6 +265,15 @@ wrsp.type='w';
 break;
 }
 
+case 'W':
+{
+load_msg(" acquisizione della velocita' del vento generandone la risposta",2);
+info=get_wind();
+wrsp.value=info;
+wrsp.type='w';
+break;
+}
+
 /* calcolo della pressione (se richiesta)  */
 case 'p':
 {
@@ -254,6 +283,18 @@ wrsp.value=info;
 wrsp.type='p';
 break;
 }
+
+case 'P':
+{
+load_msg(" acquisizione della pressione dell'aria generandone la risposta",2);
+info= get_pressure();
+wrsp.value=info;
+wrsp.type='p';
+break;
+}
+
+
+//default
 default:
 {
 puts("richiesta non valida!");
