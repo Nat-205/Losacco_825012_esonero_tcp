@@ -148,10 +148,6 @@ if(conn_socks <0)
 {
 err_msg("connessione rifiutata");
 load_msg(" ",4);
-closesocket(conn_socks);
-#if  defined(_WIN32) || defined(_WIN64)
-clearwinsock();
-#endif
 }
 
 /*host connesso */
@@ -189,7 +185,7 @@ if(wrsp.status !=2)
 {
 char city[64];
 int flag=0;
-strcpy(city,information.city);
+strncpy(city,information.city);
 
 const char *cities[]={
 "BARI","VENEZIA","FIRENZE","BOLOGNA","GENOVA","PALERMO","TORINO","NAPOLI","MILANO","ROMA",
@@ -290,15 +286,6 @@ load_msg(" acquisizione della pressione dell'aria generandone la risposta",2);
 info= get_pressure();
 wrsp.value=info;
 wrsp.type='p';
-break;
-}
-
-
-//default
-default:
-{
-puts("richiesta non valida!");
-wrsp.status=2;
 break;
 }
 } //fine switch
