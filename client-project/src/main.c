@@ -134,13 +134,13 @@ break;
 
 case 'w':
 {
-printf("%s: Velocità  del vento = %.1f km/h",request.city,response.value);
+printf("%s: Vento = %.1f km/h",request.city,response.value);
 break;
 }
 
 case 'p':
 {
-printf("%s: Pressione=%.1f hPa",request.city,response.value);
+printf("%s: Pressione = %.1f hPa",request.city,response.value);
 break;
 }
 
