@@ -88,7 +88,7 @@ return 1;
 #endif
 
 /* inizio main */
-int main(int argc, char *argv[]) {
+int main() {
 srand(time(NULL));
 #if  defined(_WIN32) || defined(_WIN64)
 if(!winstartup())
@@ -155,7 +155,7 @@ clearwinsock();
 }
 
 /*host connesso */
-void clean();
+clean();
 printf("\t\a \033[34m%s  %s \033[0m\n",inet_ntoa(cl_addr.sin_addr),"connesso!");
 
 
@@ -399,7 +399,7 @@ else
 	{
 	puts("\t\a problema di  overflow!!");
 	printf("\n");
-	err_msg("la stringa ha un numero di bytes diverso da quanto asspettato!");
+	err_msg("la stringa ha un numero di bytes diverso da quanto aspettato!");
 	load_msg("chiusura della connessione",4);
 	closesocket(conn_socks);
 		#if  defined(_WIN32) || defined(_WIN64)
