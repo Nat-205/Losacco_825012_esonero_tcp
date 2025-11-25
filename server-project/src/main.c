@@ -185,7 +185,7 @@ if(wrsp.status !=2)
 {
 char city[64];
 int flag=0;
-strncpy(city,information.city);
+strcpy(city,information.city);
 
 const char *cities[]={
 "BARI","VENEZIA","FIRENZE","BOLOGNA","GENOVA","PALERMO","TORINO","NAPOLI","MILANO","ROMA",
