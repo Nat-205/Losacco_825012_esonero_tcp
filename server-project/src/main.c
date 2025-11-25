@@ -6,49 +6,6 @@
 #include <time.h>
 #include "protocol.h"
 
-/*funzione portabile di pulizia dello schermo*/
-void clean()
-{
-#if  defined(_WIN32) || defined(_WIN64)
-system("cls");
-#else
-system("clear");
-#endif
-}
-
-/*funzione portabile di attesa*/
-void sleeping (int value)
-{
-#if  defined(_WIN32) || defined(_WIN64)
-sleep(value);
-#else
-usleep(value*1000);
-#endif
-}
-
-
-/*funzione di caricamento dei messaggi */
-void load_msg(const char *msg, int wait)
-{
-printf("\t  \033[32m%s ",  msg);
-for(int i=0;i<3;i++)
-{
-printf(".");
-sleeping(wait);
-}
-fflush(stdout);
-printf("\033[0m\n");
-printf("\n");
-}
-
-/*gestione degli errori */
-void err_msg(const char * msg)
-{
-printf("\a\t \033[1;4;31m%s\n", msg);
-printf("\033[0m\n");
-}
-
-
 
 #if  defined(_WIN32) || defined(_WIN64)
 #include <winsock.h>
@@ -63,9 +20,6 @@ puts("\a\t socket cleaned");
 
 int winstartup()
 {
-system("cls");
-load_msg(" winsock is starting up ",2);
-printf("\n");
 WSADATA windata;
 int boot=WSAStartup(MAKEWORD(2,2), &windata);
 if(boot !=0)
@@ -95,21 +49,13 @@ if(!winstartup())
 {
 return -1;
 }
-else
-{
-load_msg("windows socket boot completed", 1);
-system("cls");
-load_msg("done",1);
-system("cls");
-}
 #endif
 
 int wsocks;
-load_msg("starting the server", 2);
 wsocks=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
 if(wsocks<0)
 {
-err_msg("errore di creazione della socket!");
+puts("errore di creazione della socket!");
 return -1;
 }
 
@@ -119,24 +65,20 @@ s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
 s_adr.sin_port=htons(PORT);
 s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host ip */
 printf("\n");
- clean();
-load_msg("binding operation",3);
 if(bind(wsocks,(struct sockaddr *) &s_adr,sizeof(s_adr))<0)
 {
-err_msg(" errore di binding!");
+puts("errore di binding");
 return -1;
 }
-clean();
-load_msg("binding completato",2);
 printf("\n");
 
 if(listen(wsocks,QUEUE_SIZE)<0)
 {
-err_msg("connessione fallita");
+puts("connessione fallita");
 return -1;
 }
-clean();
-load_msg("attendendo una richiesta di connessione",2);
+
+
 /*creazione della socket di connessione */
 int conn_socks;
 struct sockaddr_in cl_addr;
@@ -147,12 +89,11 @@ while(1)  /* inizio ascolto da parte del server */
 conn_socks=	accept(wsocks,(struct sockaddr *) &cl_addr, &bufferclient);
 if(conn_socks <0)
 {
-err_msg("connessione rifiutata");
-load_msg(" ",4);
+puts("connessione rifiutata");
+continue;
 }
 
 /*host connesso */
-clean();
 printf("\t\a \033[34m%s  %s \033[0m\n",inet_ntoa(cl_addr.sin_addr),"connesso!");
 
 
@@ -163,12 +104,9 @@ weather_response_t wrsp;
 
 if(recv(conn_socks, &information, sizeof(weather_request_t),0) <=0)
 {
-err_msg("non e' stato ricevuto nessun messaggio!");
-load_msg("chiusura della connessione con l'host",4);
+puts("errore di ricezione del messaggio");
 closesocket(conn_socks);
-#if  defined(_WIN32) || defined(_WIN64)
-clearwinsock();
-#endif
+continue;
 }
 
 if(information.type=='t' || information.type=='h' || information.type=='w' ||information.type=='p'||
@@ -216,7 +154,6 @@ switch (information.type)
 /* calcolo della temperatura (se richiesta)  */
 case 't':
 {
-load_msg(" acquisizione della temperatura generandone la risposta",2);
 info=get_temperature();
 wrsp.value=info;
 wrsp.type='t';
@@ -225,7 +162,6 @@ break;
 
 case 'T':
 {
-load_msg(" acquisizione della temperatura generandone la risposta",2);
 info=get_temperature();
 wrsp.value=info;
 wrsp.type='t';
@@ -236,7 +172,6 @@ break;
 /* calcolo dell'umidità (se richiesta) */
 case 'h':
 {
-load_msg(" acquisizione dell'umidita' generandone la risposta",2);
 info=get_humidity();
 wrsp.value=info;
 wrsp.type='h';
@@ -245,7 +180,6 @@ break;
 
 case 'H':
 {
-load_msg(" acquisizione dell'umidita' generandone la risposta",2);
 info=get_humidity();
 wrsp.value=info;
 wrsp.type='h';
@@ -255,7 +189,6 @@ break;
 /* calcolo della velocità del vento (se richiesta)  */
 case 'w':
 {
-load_msg(" acquisizione della velocita' del vento generandone la risposta",2);
 info=get_wind();
 wrsp.value=info;
 wrsp.type='w';
@@ -264,7 +197,6 @@ break;
 
 case 'W':
 {
-load_msg(" acquisizione della velocita' del vento generandone la risposta",2);
 info=get_wind();
 wrsp.value=info;
 wrsp.type='w';
@@ -274,7 +206,6 @@ break;
 /* calcolo della pressione (se richiesta)  */
 case 'p':
 {
-load_msg(" acquisizione della pressione dell'aria generandone la risposta",2);
 info= get_pressure();
 wrsp.value=info;
 wrsp.type='p';
@@ -283,7 +214,6 @@ break;
 
 case 'P':
 {
-load_msg(" acquisizione della pressione dell'aria generandone la risposta",2);
 info= get_pressure();
 wrsp.value=info;
 wrsp.type='p';
@@ -296,25 +226,17 @@ break;
 
 if(send(conn_socks,&wrsp,sizeof(weather_response_t),0) != sizeof(weather_response_t))
 {
-	puts("\t\a problema di  overflow !");
-	printf("\n");
-	err_msg("la stringa e' troppo grande!");
-	load_msg("chiusura della connessione",4000);
+	puts("errore di lunghezza della stringa");
 	closesocket(conn_socks);
-	#if  defined(_WIN32) || defined(_WIN64)
-	clearwinsock();
-	#endif
+	continue;
 	}
 
-clean();
-printf("\a\t terminando la connessione con  %s.\n",inet_ntoa(cl_addr.sin_addr));
+printf("\a\t chiusura della connessione con  %s.\n",inet_ntoa(cl_addr.sin_addr));
 printf("\n");
-load_msg("chiusura della connessione",5);
-printf("\t\a\033[1;44m%s\n","connessione chiusa");
+closesocket(conn_socks);
 }    /*fine ascolto del server */
 
 closesocket(wsocks);
-
 #if  defined(_WIN32) || defined(_WIN64)
 	clearwinsock();
 #endif

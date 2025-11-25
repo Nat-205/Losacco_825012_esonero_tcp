@@ -12,12 +12,6 @@
 #define QUEUE_SIZE 5       // lunghezza coda
 #define PORT 2024
 
-/*prototipi di funzione */
-void sleeping(int value); /* funzione di attesa portabile */
-void clean(); /* pulizia portatile dello schermo */
-void load_msg(const char *msg, int wait); /*stampa un messaggio di caricamento "animato" */
-void color_reset();  /*resetta la stampa del colore */
-void err_msg(const char * msg);  /* stampa  messaggio di errore   */
 
 /* prototipi di funzioni windows */
 #if  defined(_WIN32) || defined(_WIN64)
