@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    if (send(connysocks, &request, sizeof(request), 0) != sizeof(request)) {
+    if (send(connysocks, (char*)&request, sizeof(request), 0) != sizeof(request)) {
         puts("Errore nell'invio della richiesta!");
         closesocket(connysocks);
 #if defined(_WIN32) || defined(_WIN64)
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
     }
 
     weather_response_t response;
-    if (recv(wsock, &response, sizeof(response), 0) <= 0) {
+    if (recv(connysocks, (char*)&response, sizeof(response), 0) <= 0) {
         puts("Errore nella ricezione!");
         closesocket(connysocks);
 #if defined(_WIN32) || defined(_WIN64)
