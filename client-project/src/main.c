@@ -8,10 +8,6 @@
 #include "protocol.h"
 
 
-
-
-
-
 /*funzioni e librerire dedicate interamente a windows */
 #if  defined(_WIN32) || defined(_WIN64)
 #include <winsock.h>
@@ -53,6 +49,7 @@ return 1;
 
 /* inizio main  client */
 int main(int argc, char *argv[]) {
+setbuf(stdout, NULL);
 #if  defined(_WIN32) || defined(_WIN64)
 if(!winstartup())
 {
@@ -65,13 +62,13 @@ int port=PORT;
 weather_request_t request;
 int promt;
 memset(&request,0,sizeof(request));
-while((promt=getopt(argc,argv,"r:p:"))!=-1)
+while((promt=getopt(argc,argv,"r:p:c:t:"))!=-1)
 {
 switch(promt)
 {
 case 'r':
 {
-sscanf(optarg,"%c %[^\n]",&request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
+sscanf(optarg,"%c %63[^\n]",&request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
 break;
 }
 case 'p': //se si vuole dichiarare una porta
@@ -80,14 +77,33 @@ port=atoi(optarg);
 break;
 }
 
+//per richieste "universali"
+
+case 't':
+{
+request.type=optarg[0];
+break;
+}
+
+case 'c':
+{
+request.type=optarg[0];
+break;
+}
 }
 }
 
+if(request.type==0 && strlen(request.city)<=0)
+{
+puts("errore di richiesta!");
+return -1;
+}
 
-connysocks=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+
+connysocks=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 if(connysocks<0)
 {
-puts(" Errore di sistema!!");
+puts(" Errore nella creazione della socket!");
 return -1;
 }
 
@@ -97,15 +113,18 @@ s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
 s_adr.sin_port=htons(port);
 s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host */
 printf("\n");
+
 int connection=connect(connysocks,(struct sockaddr *)&s_adr,sizeof(s_adr));
 if(connection <0)
 {
+puts("errore di connessione!");
 closesocket(connysocks);
 #if  defined(_WIN32) || defined(_WIN64)
 clearwinsock();
 #endif
 return -1;
 }
+
 printf("\n");
 if(send(connysocks,&request,sizeof(request),0) !=sizeof(request))
 {
@@ -115,9 +134,10 @@ clearwinsock();
 #endif
 return -1;
 }
+
 weather_response_t response;
 
-if(recv(connysocks,&response,sizeof(weather_response_t),0) <=0)
+if(recv(connysocks,&response,sizeof(weather_response_t),0)>0)
 {
 	closesocket(connysocks);
 	#if  defined(_WIN32) || defined(_WIN64)
