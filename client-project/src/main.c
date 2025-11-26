@@ -69,7 +69,7 @@ switch(promt)
 {
 case 'r':
 {
-sscanf(optarg,"%c %63[^\n]",&request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
+sscanf(optarg," %c %63[^\n]",&request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
 break;
 }
 case 'p': //se si vuole dichiarare una porta
