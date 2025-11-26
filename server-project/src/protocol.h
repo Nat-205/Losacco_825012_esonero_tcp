@@ -10,7 +10,7 @@
 /* parametri del server (condivisi col client) */
 #define BUFFER_SIZE 512    // dimensione massima del buffer
 #define QUEUE_SIZE 5       // lunghezza coda
-#define PORT 2024
+#define PORT 9090
 
 
 /* prototipi di funzioni windows */
@@ -24,7 +24,7 @@ void clearwinsock();
 /*dichiarazioni tipo strutturale */
 
 /*risposta del server */
-typedef struct {
+typedef struct   {
     unsigned int status;  // Response status code
     char type;            // Echo of request type
     float value;          // Weather data value
@@ -32,7 +32,7 @@ typedef struct {
 
 
 /*memorizzazione dei dati inviati dal client */
-typedef struct{
+typedef struct    {
     char type;
     char city[64];
 }weather_request_t;

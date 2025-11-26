@@ -13,7 +13,6 @@
 /* funzione windows che de-alloca le socket  */
 void clearwinsock() {
 	WSACleanup();
-puts("\a\t socket cleaned");
 }
 
 /*set-up della winsock */
@@ -24,8 +23,6 @@ WSADATA windata;
 int boot=WSAStartup(MAKEWORD(2,2), &windata);
 if(boot !=0)
 {
-puts("\a\t windows boot problem!");
-puts("\tRestart the server");
 return 0;
 }
 return 1;
@@ -58,6 +55,7 @@ wsocks=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
 if(wsocks<0)
 {
 puts("errore di creazione della socket!");
+fflush(stdout);
 return -1;
 }
 
@@ -65,6 +63,7 @@ int opt = 1;
     if (setsockopt(wsocks, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0)
     {
         puts("setsockopt failed");
+        fflush(stdout);
         return -1;
     }
 
@@ -79,6 +78,7 @@ s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host ip */
 if(bind(wsocks,(struct sockaddr *) &s_adr,sizeof(s_adr))<0)
 {
 puts("errore di binding");
+fflush(stdout);
 return -1;
 }
 
@@ -87,6 +87,7 @@ return -1;
 if(listen(wsocks,QUEUE_SIZE)<0)
 {
 puts("connessione fallita");
+fflush(stdout);
 return -1;
 }
 
@@ -102,11 +103,13 @@ conn_socks=	accept(wsocks,(struct sockaddr *) &cl_addr, &bufferclient);
 if(conn_socks <0)
 {
 puts("connessione rifiutata");
+fflush(stdout);
 continue;
 }
 
 /*host connesso */
-printf("\t\a \033[34m%s  %s \033[0m\n",inet_ntoa(cl_addr.sin_addr),"connesso!");
+printf("%s si e' connesso",inet_ntoa(cl_addr.sin_addr));
+fflush(stdout);
 
 
 /* attente la richiesta meteo  dal client connesso */
@@ -116,9 +119,10 @@ weather_response_t wrsp;
 memset(&wrsp,0,sizeof(wrsp));
 
 
-if(recv(conn_socks, &information, sizeof(weather_request_t),0) <=0)
+if(recv(conn_socks, (char*)&information, sizeof(information),0) <=0)
 {
 puts("errore di ricezione del messaggio");
+fflush(stdout);
 closesocket(conn_socks);
 continue;
 }
@@ -238,7 +242,7 @@ break;
 
 
 
-send(conn_socks,&wrsp,sizeof(weather_response_t),0);
+send(conn_socks,(char*)&wrsp,sizeof(wrsp),0);
 closesocket(conn_socks);
 }    /*fine ascolto del server */
 
@@ -247,7 +251,8 @@ closesocket(wsocks);
 	clearwinsock();
 #endif
 printf("\n");
-printf("\t\a\033[1;44m%s\n","server chiuso");
+puts("server chiuso");
+fflush(stdout);
 	return 0;
 } // main end
 
