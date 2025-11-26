@@ -4,7 +4,10 @@
 
 /* parametri del client  (condivisi col server) */
 #define BUFFER_SIZE 512    // Buffer size for messages
-#define PORT 9090
+#define PORT  56700
+#define IP "127.0.0.1"
+
+
 
 
 /* tipo strutturale che contiene i dati*/
@@ -23,7 +26,7 @@ typedef struct   {
 
 
 /* prototipi di funzioni windows */
-#if defined (_WIN32) || (_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 
 int Winstartup();
 void clearwinsock();

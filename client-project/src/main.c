@@ -60,22 +60,22 @@ return -1;
 
 int connysocks;
 int port=PORT;
+char Ip[32]=IP;
 weather_request_t request;
 int promt;
 memset(&request,0,sizeof(request));
-while((promt=getopt(argc,argv,"r:p:c:t:"))!=-1)
+while((promt=getopt(argc,argv,"r:p:c:t:s:"))!=-1)
 {
 switch(promt)
 {
 case 'r':
 {
-sscanf(optarg," %c %63[^\n]",&request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
+sscanf(optarg,"%c %63[^\n]",&request.type,request.city);  /*accetta nella linea di commando ogni possibile stringa di città*/
 break;
 }
 case 'p': //se si vuole dichiarare una porta
 {
 port=atoi(optarg);
-port=PORT;  //Imposta in automatico la porta di default
 break;
 }
 
@@ -92,10 +92,16 @@ case 'c':
 strncpy(request.city, optarg, sizeof(request.city) - 1);
 break;
 }
+case's':
+{
+strncpy(Ip,optarg,sizeof(Ip)-1);
+Ip[sizeof(Ip) - 1] = '\0';
+break;
+}
 }
 }
 
-if(request.type==0 && strlen(request.city)<=0)
+if(request.type==0 && strlen(request.city)==0)
 {
 puts("errore di richiesta!");
 return -1;
@@ -113,8 +119,8 @@ return -1;
 struct sockaddr_in s_adr;
 s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
 s_adr.sin_port=htons(port);
-s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host */
-printf("\n");
+s_adr.sin_addr.s_addr=inet_addr(Ip); /*local host */
+
 
 int connection=connect(connysocks,(struct sockaddr *)&s_adr,sizeof(s_adr));
 if(connection <0)
@@ -130,6 +136,7 @@ return -1;
 printf("\n");
 if(send(connysocks,&request,sizeof(request),0) !=sizeof(request))
 {
+puts("Errore nell'invio della richiesta!");
 closesocket(connysocks);
 #if  defined(_WIN32) || defined(_WIN64)
 clearwinsock();
@@ -139,7 +146,7 @@ return -1;
 
 weather_response_t response;
 
-if(recv(connysocks,&response,sizeof(weather_response_t),0)>0)
+if(recv(connysocks,&response,sizeof(weather_response_t),0)<=0)
 {
 	closesocket(connysocks);
 	#if  defined(_WIN32) || defined(_WIN64)
@@ -148,7 +155,9 @@ if(recv(connysocks,&response,sizeof(weather_response_t),0)>0)
 	return -1;
 }
 
-printf("ricevuto risultato dal server ip %s.  " ,inet_ntoa(s_adr.sin_addr) );
+request.city[0] = toupper(request.city[0]);
+printf("Ricevuto risultato dal server ip%s. ",inet_ntoa(s_adr.sin_addr));
+
 switch(response.status)
 {
 case 0 :
@@ -157,30 +166,29 @@ switch(response.type) //t,h,w,p
 {
 case 't':
 {
-printf("%s: Temperatura = %.1f °C",request.city,response.value);
+printf("%s:Temperatura = %.1f°C\n",request.city,response.value);
 break;
 }
 
 case 'h':
 {
-printf("%s: Umidità = %.1f %%",request.city,response.value);
+printf("%s:Umidità = %.1f%%\n",request.city,response.value);
 break;
 }
 
 case 'w':
 {
-printf("%s: Vento = %.1f km/h",request.city,response.value);
+printf("%s:Vento = %.1fkm/h\n",request.city,response.value);
 break;
 }
 
 case 'p':
 {
-printf("%s: Pressione = %.1f hPa",request.city,response.value);
+printf("%s:Pressione = %.1fhPa\n",request.city,response.value);
 break;
 }
-
 }
-printf("\n");
+
 break;
 }
 
@@ -196,7 +204,7 @@ printf("Richiesta non valida\n");
 break;
 }
 }
-fflush(stdout);
+
 
 closesocket(connysocks);
 
