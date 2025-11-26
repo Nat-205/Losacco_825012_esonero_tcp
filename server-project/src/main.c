@@ -42,7 +42,9 @@ return 1;
 #endif
 
 /* inizio main */
-int main() {
+int main()
+{
+setbuf(stdout, NULL);
 srand(time(NULL));
 #if  defined(_WIN32) || defined(_WIN64)
 if(!winstartup())
@@ -73,16 +75,14 @@ struct sockaddr_in s_adr;
 s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
 s_adr.sin_port=htons(PORT);
 s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host ip */
-printf("\n");
-
-
 
 if(bind(wsocks,(struct sockaddr *) &s_adr,sizeof(s_adr))<0)
 {
 puts("errore di binding");
 return -1;
 }
-printf("\n");
+
+
 
 if(listen(wsocks,QUEUE_SIZE)<0)
 {
@@ -113,6 +113,8 @@ printf("\t\a \033[34m%s  %s \033[0m\n",inet_ntoa(cl_addr.sin_addr),"connesso!");
 
 weather_request_t information;
 weather_response_t wrsp;
+memset(&wrsp,0,sizeof(wrsp));
+
 
 if(recv(conn_socks, &information, sizeof(weather_request_t),0) <=0)
 {
@@ -236,15 +238,7 @@ break;
 
 
 
-if(send(conn_socks,&wrsp,sizeof(weather_response_t),0) != sizeof(weather_response_t))
-{
-	puts("errore di lunghezza della stringa");
-	closesocket(conn_socks);
-	continue;
-	}
-
-printf("\a\t chiusura della connessione con  %s.\n",inet_ntoa(cl_addr.sin_addr));
-printf("\n");
+send(conn_socks,&wrsp,sizeof(weather_response_t),0);
 closesocket(conn_socks);
 }    /*fine ascolto del server */
 
