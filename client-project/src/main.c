@@ -75,6 +75,7 @@ break;
 case 'p': //se si vuole dichiarare una porta
 {
 port=atoi(optarg);
+port=PORT;  //Imposta in automatico la porta di default
 break;
 }
 
