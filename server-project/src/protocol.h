@@ -10,8 +10,8 @@
 /* parametri del server (condivisi col client) */
 #define BUFFER_SIZE 512    // dimensione massima del buffer
 #define QUEUE_SIZE 5       // lunghezza coda
-#define PORT 9090
-
+#define PORT  56700
+#define IP "127.0.0.1"
 
 /* prototipi di funzioni windows */
 #if  defined(_WIN32) || defined(_WIN64)

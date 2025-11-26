@@ -41,7 +41,6 @@ return 1;
 /* inizio main */
 int main(int argc, char *argv[])
 {
-int port=PORT;
 setbuf(stdout, NULL);
 srand(time(NULL));
 #if  defined(_WIN32) || defined(_WIN64)
@@ -51,42 +50,19 @@ return -1;
 }
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-int promt; //prende la porta
-while((promt=getopt(argc,argv,"p:"))!=-1)
-{
-switch(promt)
-{
-case 'p': //se si vuole dichiarare una porta
-{
-port=atoi(optarg);
-port=PORT;  //Imposta in automatico la porta di default
-break;
-}
-}
-}
+int port=PORT;
+if (argc > 2 && strcmp(argv[1], "-p") == 0) {
+       port = atoi(argv[2]);
+   }
 
 int wsocks;
 wsocks=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
 if(wsocks<0)
 {
 puts("errore di creazione della socket!");
-fflush(stdout);
+#if  defined(_WIN32) || defined(_WIN64)
+	clearwinsock();
+#endif
 return -1;
 }
 
@@ -98,9 +74,6 @@ int opt = 1;
         return -1;
     }
 
-
-
-
 struct sockaddr_in s_adr;
 s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
 s_adr.sin_port=htons(port);
@@ -110,6 +83,10 @@ if(bind(wsocks,(struct sockaddr *) &s_adr,sizeof(s_adr))<0)
 {
 puts("errore di binding");
 fflush(stdout);
+closesocket(wsocks);
+#if  defined(_WIN32) || defined(_WIN64)
+clearwinsock();
+#endif
 return -1;
 }
 
@@ -119,6 +96,10 @@ if(listen(wsocks,QUEUE_SIZE)<0)
 {
 puts("connessione fallita");
 fflush(stdout);
+closesocket(wsocks);
+#if  defined(_WIN32) || defined(_WIN64)
+clearwinsock();
+#endif
 return -1;
 }
 
@@ -127,6 +108,7 @@ return -1;
 int conn_socks;
 struct sockaddr_in cl_addr;
 int bufferclient=sizeof(cl_addr); /*buffer dei dati host */
+puts("server collegato");
 while(1)  /* inizio ascolto da parte del server */
 {
 
@@ -157,6 +139,7 @@ fflush(stdout);
 closesocket(conn_socks);
 continue;
 }
+printf("Richiesta '%c %s' dal client ip %s\n", information.type, information.city, inet_ntoa(cl_addr.sin_addr));
 
 if(information.type=='t' || information.type=='h' || information.type=='w' ||information.type=='p'||
 information.type=='T' || information.type=='H' || information.type=='W' ||information.type=='P')  //case insensitive //
@@ -166,6 +149,8 @@ wrsp.status=0; //codice=successo
 else
 {
 wrsp.status=2;
+wrsp.type='\0';
+wrsp.value=0.0;
 }
 
 /*confronta tutti i possibili casi (evitando anche i problemi di case-sensitive( viene resituito 0 se la condizione è soddisfatta */
