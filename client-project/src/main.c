@@ -50,6 +50,7 @@ return 1;
 /* inizio main  client */
 int main(int argc, char *argv[]) {
 setbuf(stdout, NULL);
+
 #if  defined(_WIN32) || defined(_WIN64)
 if(!winstartup())
 {
@@ -87,7 +88,7 @@ break;
 
 case 'c':
 {
-request.type=optarg[0];
+strncpy(request.city, optarg, sizeof(request.city) - 1);
 break;
 }
 }
@@ -194,7 +195,7 @@ printf("Richiesta non valida\n");
 break;
 }
 }
-printf("\n");
+fflush(stdout);
 
 closesocket(connysocks);
 

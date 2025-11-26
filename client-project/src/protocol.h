@@ -4,17 +4,17 @@
 
 /* parametri del client  (condivisi col server) */
 #define BUFFER_SIZE 512    // Buffer size for messages
-#define PORT 2024
+#define PORT 9090
 
 
 /* tipo strutturale che contiene i dati*/
-typedef struct {
+typedef struct  __attribute__((packed))  {
    char type;        // Weather data type: 't', 'h', 'w', 'p'
    char city[64];    // City name (null-terminated string)
 } weather_request_t;
 
 /*struttura che salva la risposta del server */
-typedef struct {
+typedef struct  __attribute__((packed))  {
     unsigned int status;  // Response status code
     char type;            // Echo of request type
     float value;          // Weather data value
