@@ -1,56 +1,86 @@
-/*
- * protocol.h
- *
- * Server header file
- * Definitions, constants and function prototypes for the server
- */
-
+/* protocol.h - Header file del  client*/
 #ifndef PROTOCOL_H_
 #define PROTOCOL_H_
-/* parametri del server (condivisi col client) */
-#define BUFFER_SIZE 512    // dimensione massima del buffer
-#define QUEUE_SIZE 5       // lunghezza coda
-#define PORT  56700
-#define IP "127.0.0.1"
 
-/* prototipi di funzioni windows */
-#if  defined(_WIN32) || defined(_WIN64)
+/* Parametri */
+#define QUEUE_SIZE 5
+#define BUFFER_SIZE 512
+#define SERVER_PORT 56700
+#define DEFAULT_IP "127.0.0.1"
 
-int Winstartup();
-void clearwinsock();
-#endif
+/* Codici di stato della risposta */
+#define STATUS_SUCCESS 0
+#define STATUS_CITY_UNAVAILABLE 1
+#define STATUS_INVALID_REQUEST 2
 
-
-/*dichiarazioni tipo strutturale */
-
-/*risposta del server */
-typedef struct   {
-    unsigned int status;  // Response status code
-    char type;            // Echo of request type
-    float value;          // Weather data value
-} weather_response_t;
+/* Tipi di richiesta meteo */
+#define TYPE_TEMPERATURE 't'
+#define TYPE_HUMIDITY    'h'
+#define TYPE_WIND        'w'
+#define TYPE_PRESSURE    'p'
 
 
-/*memorizzazione dei dati inviati dal client */
-typedef struct    {
-    char type;
-    char city[64];
+/*strutture */
+
+typedef struct{
+char type;
+char city[64];
 }weather_request_t;
 
+typedef struct {
+unsigned int status;
+char type;
+float value;
+} weather_response_t;
+
+/* Prototipi funzioni Windows */
+#if defined(_WIN32) || defined(_WIN64)
+int winstartup(void);
+void clearwinsock(void);
+#endif
+
+#endif /* PROTOCOL_H_ */
 
 
-/*funzioni di calcolo del valore richiesto dal client  */
-float get_temperature();    // Range: -10.0 to 40.0 °C
-float get_humidity();       // Range: 20.0 to 100.0 %
-float get_wind();           // Range: 0.0 to 100.0 km/h
-float get_pressure();       // Range: 950.0 to 1050.0 hPa
+/* protocol.h - Header file del server*/
+#ifndef PROTOCOL_H_
+#define PROTOCOL_H_
+
+/* Parametri */
+#define QUEUE_SIZE 5
+#define BUFFER_SIZE 512
+#define SERVER_PORT 56700
+#define DEFAULT_IP "127.0.0.1"
+
+/* Codici di stato della risposta */
+#define STATUS_SUCCESS 0
+#define STATUS_CITY_UNAVAILABLE 1
+#define STATUS_INVALID_REQUEST 2
+
+/* Tipi di richiesta meteo */
+#define TYPE_TEMPERATURE 't'
+#define TYPE_HUMIDITY    'h'
+#define TYPE_WIND        'w'
+#define TYPE_PRESSURE    'p'
 
 
+/*strutture */
 
+typedef struct{
+char type;
+char city[64];
+}weather_request_t;
 
+typedef struct {
+unsigned int status;
+char type;
+float value;
+} weather_response_t;
 
-
-
-
+/* Prototipi funzioni Windows */
+#if defined(_WIN32) || defined(_WIN64)
+int winstartup(void);
+void clearwinsock(void);
+#endif
 
 #endif /* PROTOCOL_H_ */
