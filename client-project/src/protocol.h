@@ -1,39 +1,86 @@
-/*header file dei protocoli del client */
+/* protocol.h - Header file del  client*/
 #ifndef PROTOCOL_H_
 #define PROTOCOL_H_
 
-/* parametri del client  (condivisi col server) */
-#define BUFFER_SIZE 512    // Buffer size for messages
-#define PORT  56700
-#define IP "127.0.0.1"
+/* Parametri */
+#define QUEUE_SIZE 5
+#define BUFFER_SIZE 512
+#define SERVER_PORT 56700
+#define DEFAULT_IP "127.0.0.1"
+
+/* Codici di stato della risposta */
+#define STATUS_SUCCESS 0
+#define STATUS_CITY_UNAVAILABLE 1
+#define STATUS_INVALID_REQUEST 2
+
+/* Tipi di richiesta meteo */
+#define TYPE_TEMPERATURE 't'
+#define TYPE_HUMIDITY    'h'
+#define TYPE_WIND        'w'
+#define TYPE_PRESSURE    'p'
 
 
+/*strutture */
 
+typedef struct{
+char type;
+char city[64];
+}weather_request_t;
 
-/* tipo strutturale che contiene i dati*/
-typedef struct  {
-   char type;        // Weather data type: 't', 'h', 'w', 'p'
-   char city[64];    // City name (null-terminated string)
-} weather_request_t;
-
-/*struttura che salva la risposta del server */
-typedef struct   {
-    unsigned int status;  // Response status code
-    char type;            // Echo of request type
-    float value;          // Weather data value
+typedef struct {
+unsigned int status;
+char type;
+float value;
 } weather_response_t;
 
-
-
-/* prototipi di funzioni windows */
+/* Prototipi funzioni Windows */
 #if defined(_WIN32) || defined(_WIN64)
-
-int Winstartup();
-void clearwinsock();
+int winstartup(void);
+void clearwinsock(void);
 #endif
 
+#endif /* PROTOCOL_H_ */
 
 
+/* protocol.h - Header file del server*/
+#ifndef PROTOCOL_H_
+#define PROTOCOL_H_
 
+/* Parametri */
+#define QUEUE_SIZE 5
+#define BUFFER_SIZE 512
+#define SERVER_PORT 56700
+#define DEFAULT_IP "127.0.0.1"
+
+/* Codici di stato della risposta */
+#define STATUS_SUCCESS 0
+#define STATUS_CITY_UNAVAILABLE 1
+#define STATUS_INVALID_REQUEST 2
+
+/* Tipi di richiesta meteo */
+#define TYPE_TEMPERATURE 't'
+#define TYPE_HUMIDITY    'h'
+#define TYPE_WIND        'w'
+#define TYPE_PRESSURE    'p'
+
+
+/*strutture */
+
+typedef struct{
+char type;
+char city[64];
+}weather_request_t;
+
+typedef struct {
+unsigned int status;
+char type;
+float value;
+} weather_response_t;
+
+/* Prototipi funzioni Windows */
+#if defined(_WIN32) || defined(_WIN64)
+int winstartup(void);
+void clearwinsock(void);
+#endif
 
 #endif /* PROTOCOL_H_ */
