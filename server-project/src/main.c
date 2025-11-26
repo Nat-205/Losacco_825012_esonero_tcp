@@ -59,6 +59,15 @@ puts("errore di creazione della socket!");
 return -1;
 }
 
+int opt = 1;
+    if (setsockopt(wsocks, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0)
+    {
+        puts("setsockopt failed");
+        return -1;
+    }
+
+
+
 
 struct sockaddr_in s_adr;
 s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
@@ -66,11 +75,6 @@ s_adr.sin_port=htons(PORT);
 s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host ip */
 printf("\n");
 
-int opt = 1;
-    if (setsockopt(wsocks, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0) {
-        perror("setsockopt failed");
-        return -1;
-    }
 
 
 if(bind(wsocks,(struct sockaddr *) &s_adr,sizeof(s_adr))<0)
