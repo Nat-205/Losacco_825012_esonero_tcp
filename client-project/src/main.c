@@ -64,6 +64,7 @@ int connysocks;
 int port=PORT;
 weather_request_t request;
 int promt;
+memset(&request,0,sizeof(request));
 while((promt=getopt(argc,argv,"r:p:"))!=-1)
 {
 switch(promt)
@@ -81,6 +82,8 @@ break;
 
 }
 }
+
+
 connysocks=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
 if(connysocks<0)
 {
