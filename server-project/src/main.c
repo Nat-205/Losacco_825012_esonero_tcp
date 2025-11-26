@@ -39,8 +39,9 @@ return 1;
 #endif
 
 /* inizio main */
-int main()
+int main(int argc, char *argv[])
 {
+int port=PORT;
 setbuf(stdout, NULL);
 srand(time(NULL));
 #if  defined(_WIN32) || defined(_WIN64)
@@ -49,6 +50,36 @@ if(!winstartup())
 return -1;
 }
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int promt; //prende la porta
+while((promt=getopt(argc,argv,"p:"))!=-1)
+{
+switch(promt)
+{
+case 'p': //se si vuole dichiarare una porta
+{
+port=atoi(optarg);
+port=PORT;  //Imposta in automatico la porta di default
+break;
+}
+}
+}
 
 int wsocks;
 wsocks=socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -72,7 +103,7 @@ int opt = 1;
 
 struct sockaddr_in s_adr;
 s_adr.sin_family= AF_INET; /*Su protocollo IPV4 */
-s_adr.sin_port=htons(PORT);
+s_adr.sin_port=htons(port);
 s_adr.sin_addr.s_addr=inet_addr("127.0.0.1"); /*local host ip */
 
 if(bind(wsocks,(struct sockaddr *) &s_adr,sizeof(s_adr))<0)
